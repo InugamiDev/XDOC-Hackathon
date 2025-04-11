@@ -6,86 +6,159 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState } from "react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 
-interface BiomarkerData {
-  name: string;
-  value: number;
+interface FormData {
+  BMI: string | null;
+  AGE: string | null;
+  Urea: string | null;
+  Cr: string | null;
+  HbA1c: string | null;
+  Chol: string | null;
+  TG: string | null;
+  HDL: string | null;
+  LDL: string | null;
+  VLDL: string | null;
 }
 
-const initialFormData = {
-  BMI: "23.5",
-  AGE: "45",
-  Urea: "32",
-  Cr: "0.9",
-  HbA1c: "5.7",
-  Chol: "185",
-  TG: "150",
-  HDL: "45",
-  LDL: "100",
-  VLDL: "30",
+interface ExplanationSection {
+  title: string;
+  items: Array<{
+    label: string;
+    value: string;
+    shap?: string;
+    status?: string;
+    normalRange?: string;
+  }>;
+}
+
+interface ExplanationData {
+  patientInfo: ExplanationSection;
+  bloodMarkers: ExplanationSection;
+  lipidProfile: ExplanationSection;
+  kidneyFunction: ExplanationSection;
+  prediction: {
+    title: string;
+    risk: string;
+    confidence: string;
+    interpretation: string;
+  };
+  analysis: {
+    title: string;
+    mainFactors: Array<{
+      factor: string;
+      impact: string;
+      explanation: string;
+    }>;
+  };
+  recommendations: {
+    title: string;
+    items: Array<{
+      category: string;
+      suggestions: string[];
+    }>;
+  };
+}
+
+const initialFormData: FormData = {
+  BMI: null,
+  AGE: null,
+  Urea: null,
+  Cr: null,
+  HbA1c: null,
+  Chol: null,
+  TG: null,
+  HDL: null,
+  LDL: null,
+  VLDL: null,
 };
 
 export default function DiabetesPrediction() {
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [result, setResult] = useState<{
     prediction: string;
-    trustScore?: number;
-    explanation: string;
+    trustScore: number;
+    explanation: ExplanationData;
     apiResult: string;
   } | null>(null);
-
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
+      const processedData = Object.entries(formData).reduce<Record<string, number | null>>((acc, [key, value]) => ({
+        ...acc,
+        [key]: value ? parseFloat(value) : null
+      }), {});
+
       const response = await fetch("/api/diagnosis/predict/diabetes", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          BMI: parseFloat(formData.BMI),
-          AGE: parseFloat(formData.AGE),
-          Urea: parseFloat(formData.Urea),
-          Cr: parseFloat(formData.Cr),
-          HbA1c: parseFloat(formData.HbA1c),
-          Chol: parseFloat(formData.Chol),
-          TG: parseFloat(formData.TG),
-          HDL: parseFloat(formData.HDL),
-          LDL: parseFloat(formData.LDL),
-          VLDL: parseFloat(formData.VLDL),
-        }),
+        body: JSON.stringify(processedData),
       });
 
       const data = await response.json();
-      setResult(data);
+      
+      if ('error' in data) {
+        setError(typeof data.error === 'string' ? data.error : 'Lỗi không xác định');
+        setResult(null);
+      } else if (!data.explanation || !data.prediction) {
+        setError("Lỗi khi xử lý kết quả phân tích");
+        setResult(null);
+      } else {
+        setResult(data);
+        setError(null);
+      }
     } catch (error) {
       console.error("Error:", error);
+      setError(error instanceof Error ? error.message : "Có lỗi xảy ra khi gửi yêu cầu");
+      setResult(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const biomarkerData: BiomarkerData[] = result
-    ? [
-        { name: "HbA1c", value: parseFloat(formData.HbA1c) },
-        { name: "Cholesterol", value: parseFloat(formData.Chol) },
-        { name: "Triglycerides", value: parseFloat(formData.TG) },
-        { name: "HDL", value: parseFloat(formData.HDL) },
-        { name: "LDL", value: parseFloat(formData.LDL) },
-      ]
-    : [];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof typeof formData) => {
-    setFormData({ ...formData, [field]: e.target.value });
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof FormData) => {
+    const value = e.target.value === "" ? null : e.target.value;
+    setFormData({ ...formData, [field]: value });
   };
+
+  const renderMetricCard = (section: ExplanationSection) => (
+    <Card className="mb-4">
+      <CardHeader>
+        <CardTitle>{section.title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-2">
+          {section.items.map((item, index) => (
+            <div key={index} className="flex justify-between items-center">
+              <span className="font-medium">{item.label}:</span>
+              <div className="text-right">
+                <span className={`${
+                  item.status === 'high' ? 'text-red-500' : 
+                  item.status === 'low' ? 'text-yellow-500' : 
+                  'text-green-500'
+                }`}>
+                  {item.value}
+                </span>
+                {item.normalRange && (
+                  <div className="text-sm text-gray-500">
+                    Khoảng bình thường: {item.normalRange}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
 
   return (
     <div className="container mx-auto p-4">
@@ -105,9 +178,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="age"
                     type="number"
-                    value={formData.AGE}
+                    value={formData.AGE ?? ""}
                     onChange={(e) => handleInputChange(e, "AGE")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -116,9 +188,8 @@ export default function DiabetesPrediction() {
                     id="bmi"
                     type="number"
                     step="0.1"
-                    value={formData.BMI}
+                    value={formData.BMI ?? ""}
                     onChange={(e) => handleInputChange(e, "BMI")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -127,9 +198,8 @@ export default function DiabetesPrediction() {
                     id="hba1c"
                     type="number"
                     step="0.1"
-                    value={formData.HbA1c}
+                    value={formData.HbA1c ?? ""}
                     onChange={(e) => handleInputChange(e, "HbA1c")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -137,9 +207,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="chol"
                     type="number"
-                    value={formData.Chol}
+                    value={formData.Chol ?? ""}
                     onChange={(e) => handleInputChange(e, "Chol")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -147,9 +216,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="tg"
                     type="number"
-                    value={formData.TG}
+                    value={formData.TG ?? ""}
                     onChange={(e) => handleInputChange(e, "TG")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -157,9 +225,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="hdl"
                     type="number"
-                    value={formData.HDL}
+                    value={formData.HDL ?? ""}
                     onChange={(e) => handleInputChange(e, "HDL")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -167,9 +234,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="ldl"
                     type="number"
-                    value={formData.LDL}
+                    value={formData.LDL ?? ""}
                     onChange={(e) => handleInputChange(e, "LDL")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -177,9 +243,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="vldl"
                     type="number"
-                    value={formData.VLDL}
+                    value={formData.VLDL ?? ""}
                     onChange={(e) => handleInputChange(e, "VLDL")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -187,9 +252,8 @@ export default function DiabetesPrediction() {
                   <Input
                     id="urea"
                     type="number"
-                    value={formData.Urea}
+                    value={formData.Urea ?? ""}
                     onChange={(e) => handleInputChange(e, "Urea")}
-                    required
                   />
                 </div>
                 <div className="space-y-2">
@@ -198,9 +262,8 @@ export default function DiabetesPrediction() {
                     id="cr"
                     type="number"
                     step="0.1"
-                    value={formData.Cr}
+                    value={formData.Cr ?? ""}
                     onChange={(e) => handleInputChange(e, "Cr")}
-                    required
                   />
                 </div>
               </div>
@@ -211,65 +274,105 @@ export default function DiabetesPrediction() {
           </CardContent>
         </Card>
 
-        {result && (
+        {error && typeof error === 'string' && (
           <Card>
             <CardHeader>
-              <CardTitle>Kết Quả Đánh Giá</CardTitle>
-              <CardDescription>
-                Mức độ nguy cơ:{" "}
-                <span className={result.prediction === "High Risk" ? "text-red-500" : "text-green-500"}>
-                  {result.prediction === "High Risk" ? "Nguy Cơ Cao" : "Nguy Cơ Thấp"}
-                </span>
-              </CardDescription>
+              <CardTitle>Lỗi</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {result.trustScore !== undefined && (
-                <div>
-                  <h3 className="font-semibold mb-2">Độ Tin Cậy</h3>
-                  <div className="w-full bg-gray-200 rounded-full h-4">
-                    <div
-                      className="h-4 rounded-full bg-blue-500"
-                      style={{ width: `${result.trustScore}%` }}
-                    />
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {result.trustScore.toFixed(1)}% độ tin cậy
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <h3 className="font-semibold mb-2">Chỉ Số Quan Trọng</h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={biomarkerData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-2">Phân Tích Chi Tiết</h3>
-                <div className="prose prose-sm max-w-none">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {result.explanation}
-                  </ReactMarkdown>
-                </div>
-              </div>
-
-              {/* {result.apiResult && (
-                <div>
-                  <h3 className="font-semibold mb-2">Kết Quả API</h3>
-                  <p className="text-sm text-gray-700">{result.apiResult}</p>
-                </div>
-              )} */}
+            <CardContent>
+              <p className="text-red-500">{error}</p>
             </CardContent>
           </Card>
+        )}
+
+        {result && result.explanation && (
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{result.explanation.prediction.title}</CardTitle>
+                <CardDescription>
+                  Mức độ nguy cơ:{" "}
+                  <span className={result.explanation.prediction.risk === "high" ? "text-red-500" : "text-green-500"}>
+                    {result.explanation.prediction.risk === "high" ? "Nguy Cơ Cao" : "Nguy Cơ Thấp"}
+                  </span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {result.trustScore && (
+                  <div className="mb-4">
+                    <h3 className="font-semibold mb-2">Độ Tin Cậy</h3>
+                    <div className="w-full bg-gray-200 rounded-full h-4">
+                      <div
+                        className="h-4 rounded-full bg-blue-500"
+                        style={{ width: `${result.trustScore}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {result.trustScore.toFixed(1)}% độ tin cậy
+                    </p>
+                  </div>
+                )}
+                <p className="text-sm text-gray-700">
+                  {result.explanation.prediction.interpretation}
+                </p>
+              </CardContent>
+            </Card>
+
+            {result.explanation.bloodMarkers && renderMetricCard(result.explanation.bloodMarkers)}
+            {result.explanation.lipidProfile && renderMetricCard(result.explanation.lipidProfile)}
+            {result.explanation.kidneyFunction && renderMetricCard(result.explanation.kidneyFunction)}
+
+            {result.explanation.analysis && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{result.explanation.analysis.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {result.explanation.analysis.mainFactors.map((factor, index) => (
+                      <div key={index} className="border-b pb-2 last:border-0">
+                        <h4 className="font-medium">{factor.factor}</h4>
+                        <p className="text-sm text-gray-600">{factor.explanation}</p>
+                        <span className={`text-sm ${
+                          factor.impact === 'high' ? 'text-red-500' :
+                          factor.impact === 'medium' ? 'text-yellow-500' :
+                          'text-blue-500'
+                        }`}>
+                          Mức độ ảnh hưởng: {
+                            factor.impact === 'high' ? 'Cao' :
+                            factor.impact === 'medium' ? 'Trung bình' :
+                            'Thấp'
+                          }
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {result.explanation.recommendations && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>{result.explanation.recommendations.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {result.explanation.recommendations.items.map((item, index) => (
+                      <div key={index}>
+                        <h4 className="font-medium mb-2">{item.category}</h4>
+                        <ul className="list-disc list-inside space-y-1">
+                          {item.suggestions.map((suggestion, sIndex) => (
+                            <li key={sIndex} className="text-sm text-gray-600">{suggestion}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
       </div>
     </div>

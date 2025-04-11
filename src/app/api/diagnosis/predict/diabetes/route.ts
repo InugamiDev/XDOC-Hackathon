@@ -91,37 +91,40 @@ async function getAIExplanation(data: DiabetesData, prediction: string, trustSco
     Với vai trò là trợ lý AI y tế, hãy phân tích các thông số sức khỏe sau và cung cấp phân tích chi tiết bằng tiếng Việt:
 
     Thông tin bệnh nhân:
-    * BMI: ${data.BMI} kg/m² (SHAP: ${shapValues.BMI})
-    * Tuổi: ${data.AGE} tuổi
-    * HbA1c: ${data.HbA1c}% (SHAP: ${shapValues.HbA1c})
-    * Cholesterol: ${data.Chol} mg/dL (SHAP: ${shapValues.Chol})
-    * Triglycerides: ${data.TG} mg/dL (SHAP: ${shapValues.TG})
-    * HDL: ${data.HDL} mg/dL
-    * LDL: ${data.LDL} mg/dL
-    * VLDL: ${data.VLDL} mg/dL (SHAP: ${shapValues.VLDL})
-    * Ure: ${data.Urea} mg/dL
-    * Creatinine: ${data.Cr} mg/dL
+    - BMI: ${data.BMI} kg/m² (SHAP: ${shapValues.BMI})
+    - Tuổi: ${data.AGE} tuổi
+    - HbA1c: ${data.HbA1c}% (SHAP: ${shapValues.HbA1c})
+    - Cholesterol: ${data.Chol} mg/dL (SHAP: ${shapValues.Chol})
+    - Triglycerides: ${data.TG} mg/dL (SHAP: ${shapValues.TG})
+    - HDL: ${data.HDL} mg/dL
+    - LDL: ${data.LDL} mg/dL
+    - VLDL: ${data.VLDL} mg/dL (SHAP: ${shapValues.VLDL})
+    - Ure: ${data.Urea} mg/dL
+    - Creatinine: ${data.Cr} mg/dL
 
     Dự đoán: ${prediction === "High Risk" ? "Nguy cơ cao" : "Nguy cơ thấp"}
     Độ tin cậy: ${trustScore.toFixed(1)}%
 
     Hãy cung cấp phân tích theo cấu trúc sau (bằng Markdown):
-
+    Nhớ rằng không cần nói những câu tương tự như vầy: "Tuyệt vời! Dưới đây là phân tích chi tiết về các thông số sức khỏe bạn cung cấp, được trình bày theo cấu trúc Markdown như yêu cầu:"
     1. Kết quả dự đoán và độ tin cậy
     2. Chi tiết từng chỉ số chính và giá trị SHAP:
-       * Giải thích ý nghĩa giá trị
-       * Ý nghĩa lâm sàng
-       * Mức độ ảnh hưởng đến kết quả dự đoán
-       
+       - Giải thích ý nghĩa giá trị
+       - Ý nghĩa lâm sàng
+       - Mức độ ảnh hưởng đến kết quả dự đoán
+       - Trình bày ngắn gọn, inline khi cần.
     3. Khuyến nghị và lưu ý:
-       * Các yếu tố cần theo dõi
-       * Đề xuất biện pháp cải thiện
+       - Các yếu tố cần theo dõi
+       - Đề xuất biện pháp cải thiện
+    4. Có thể mắc bệnh
+       - Nguy cơ mắc các bệnh nào, dựa theo yếu tố gì.
 
     Hãy đảm bảo:
-    * Sử dụng ngôn ngữ dễ hiểu cho người không chuyên
-    * Đánh dấu **in đậm** các giá trị quan trọng
-    * Trình bày rõ ràng và có cấu trúc
-    * Giải thích chi tiết về giá trị SHAP và ý nghĩa của chúng
+    - Sử dụng ngôn ngữ dễ hiểu cho người không chuyên
+    - Đánh dấu **in đậm** các giá trị quan trọng
+    - Dùng bullet point dạng markdown khi cần.
+    - Trình bày rõ ràng và có cấu trúc
+    - Giải thích chi tiết về giá trị SHAP và ý nghĩa của chúng
   `;
 
   const result = await model.generateContent(prompt);

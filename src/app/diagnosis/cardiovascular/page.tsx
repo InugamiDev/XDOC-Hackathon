@@ -109,6 +109,45 @@ export default function CardiovascularPrediction() {
     apiResult: string;
   } | null>(null);
 
+  // Helper function for consistent form field rendering
+  const renderFormField = (
+    label: string,
+    id: keyof FormData,
+    type: "number" | "select",
+    options?: { value: string; label: string }[]
+  ) => (
+    <div className="space-y-2">
+      <Label htmlFor={id}>{label}</Label>
+      {type === "select" && options ? (
+        <select
+          id={id}
+          className="w-full p-2 border rounded bg-gray-700/50 border-gray-600 text-gray-200"
+          value={formData[id] ?? ""}
+          onChange={(e) => handleInputChange(e, id)}
+        >
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <Input
+          id={id}
+          type="number"
+          step={id === "bmi" || id === "crp_level" || id === "homocysteine_level" ? "0.1" : undefined}
+          value={formData[id] ?? ""}
+          onChange={(e) => handleInputChange(e, id)}
+        />
+      )}
+    </div>
+  );
+
+  // Helper function for consistent label styling
+  const renderLabel = (text: string, htmlFor: string) => (
+    <Label htmlFor={htmlFor} className="text-gray-200">{text}</Label>
+  );
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -166,30 +205,30 @@ export default function CardiovascularPrediction() {
   };
 
   const renderMetricCard = (section: ExplanationSection) => (
-    <Card className="mb-4">
+    <Card className="mb-4 bg-gray-800/50 backdrop-blur border border-gray-700/50">
       <CardHeader>
-        <CardTitle>{section.title}</CardTitle>
+        <CardTitle className="text-[#00BFFF]">{section.title}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
           {section.items.map((item, index) => (
-            <div key={index} className="flex justify-between items-center">
+            <div key={index} className="flex justify-between items-center text-gray-200">
               <span className="font-medium">{item.label}:</span>
               <div className="text-right">
                 <span className={`${
-                  item.status === 'high' ? 'text-red-500' :
-                  item.status === 'low' ? 'text-yellow-500' :
-                  'text-green-500'
-                }`}>
+                  item.status === 'high' ? 'text-red-400 font-medium' :
+                  item.status === 'low' ? 'text-yellow-400 font-medium' :
+                  'text-emerald-400 font-medium'
+                } text-base`}>
                   {item.value}
                 </span>
                 <div className="text-sm">
                   {item.impact && (
                     <span className={`${
-                      item.impact === 'high' ? 'text-red-500' :
-                      item.impact === 'medium' ? 'text-yellow-500' :
-                      'text-blue-500'
-                    }`}>
+                      item.impact === 'high' ? 'text-red-400' :
+                      item.impact === 'medium' ? 'text-yellow-400' :
+                      'text-[#00BFFF]'
+                    } font-medium`}>
                       Mức độ: {
                         item.impact === 'high' ? 'Cao' :
                         item.impact === 'medium' ? 'Trung bình' :
@@ -199,7 +238,7 @@ export default function CardiovascularPrediction() {
                   )}
                 </div>
                 {item.shap && (
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-400">
                     SHAP: {item.shap}
                   </div>
                 )}
@@ -215,10 +254,10 @@ export default function CardiovascularPrediction() {
     <div className="space-y-4">
       {riskFactors.map((category, index) => (
         <div key={index}>
-          <h4 className="font-medium mb-2">{category.category}</h4>
+          <h4 className="font-medium mb-2 text-gray-200">{category.category}</h4>
           <ul className="list-disc list-inside space-y-1">
             {category.factors.map((factor, fIndex) => (
-              <li key={fIndex} className="text-sm text-gray-600">{factor}</li>
+              <li key={fIndex} className="text-sm text-gray-300">{factor}</li>
             ))}
           </ul>
         </div>
@@ -227,33 +266,33 @@ export default function CardiovascularPrediction() {
   );
 
   const renderRecommendations = (recommendations: ExplanationData['recommendations']) => (
-    <Card>
+    <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
       <CardHeader>
-        <CardTitle>{recommendations.title}</CardTitle>
+        <CardTitle className="text-[#00BFFF]">{recommendations.title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-gray-200">
         <div className="space-y-4">
           <div>
             <h4 className="font-medium mb-2">Lối sống</h4>
-            <ul className="list-disc list-inside space-y-1">
+            <ul className="list-disc list-inside space-y-1 text-gray-300">
               {recommendations.lifestyle.map((item, index) => (
-                <li key={index} className="text-sm text-gray-600">{item}</li>
+                <li key={index} className="text-sm">{item}</li>
               ))}
             </ul>
           </div>
           <div>
             <h4 className="font-medium mb-2">Theo dõi</h4>
-            <ul className="list-disc list-inside space-y-1">
+            <ul className="list-disc list-inside space-y-1 text-gray-300">
               {recommendations.monitoring.map((item, index) => (
-                <li key={index} className="text-sm text-gray-600">{item}</li>
+                <li key={index} className="text-sm">{item}</li>
               ))}
             </ul>
           </div>
           <div>
             <h4 className="font-medium mb-2">Phòng ngừa</h4>
-            <ul className="list-disc list-inside space-y-1">
+            <ul className="list-disc list-inside space-y-1 text-gray-300">
               {recommendations.prevention.map((item, index) => (
-                <li key={index} className="text-sm text-gray-600">{item}</li>
+                <li key={index} className="text-sm">{item}</li>
               ))}
             </ul>
           </div>
@@ -261,205 +300,79 @@ export default function CardiovascularPrediction() {
       </CardContent>
     </Card>
   );
-
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Đánh Giá Nguy Cơ Tim Mạch</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
+    <main className="min-h-screen bg-gradient-to-br from-gray-700 via-gray-600 to-gray-900 p-8">
+      <div className="container mx-auto">
+        <h1 className="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#00BFFF] to-blue-500">
+          Đánh Giá Nguy Cơ Tim Mạch
+        </h1>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
           <CardHeader>
-            <CardTitle>Thông Tin Bệnh Nhân</CardTitle>
-            <CardDescription>Nhập các chỉ số sức khỏe của bạn</CardDescription>
+            <CardTitle className="text-[#00BFFF]">Thông Tin Bệnh Nhân</CardTitle>
+            <CardDescription className="text-gray-300">Nhập các chỉ số sức khỏe của bạn</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="age">Tuổi</Label>
-                  <Input
-                    id="age"
-                    type="number"
-                    value={formData.age ?? ""}
-                    onChange={(e) => handleInputChange(e, "age")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gender">Giới tính</Label>
-                  <select
-                    id="gender"
-                    className="w-full p-2 border rounded"
-                    value={formData.gender ?? "Male"}
-                    onChange={(e) => handleInputChange(e, "gender")}
-                  >
-                    <option value="Male">Nam</option>
-                    <option value="Female">Nữ</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="blood_pressure">Huyết áp</Label>
-                  <Input
-                    id="blood_pressure"
-                    type="number"
-                    value={formData.blood_pressure ?? ""}
-                    onChange={(e) => handleInputChange(e, "blood_pressure")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cholesterol_level">Cholesterol</Label>
-                  <Input
-                    id="cholesterol_level"
-                    type="number"
-                    value={formData.cholesterol_level ?? ""}
-                    onChange={(e) => handleInputChange(e, "cholesterol_level")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="bmi">Chỉ số BMI</Label>
-                  <Input
-                    id="bmi"
-                    type="number"
-                    step="0.1"
-                    value={formData.bmi ?? ""}
-                    onChange={(e) => handleInputChange(e, "bmi")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="exercise_habits">Tập thể dục</Label>
-                  <select
-                    id="exercise_habits"
-                    className="w-full p-2 border rounded"
-                    value={formData.exercise_habits ?? "Low"}
-                    onChange={(e) => handleInputChange(e, "exercise_habits")}
-                  >
-                    <option value="Low">Ít</option>
-                    <option value="Medium">Trung bình</option>
-                    <option value="High">Nhiều</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="smoking">Hút thuốc</Label>
-                  <select
-                    id="smoking"
-                    className="w-full p-2 border rounded"
-                    value={formData.smoking ?? "No"}
-                    onChange={(e) => handleInputChange(e, "smoking")}
-                  >
-                    <option value="No">Không</option>
-                    <option value="Yes">Có</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="family_heart_disease">Tiền sử tim mạch gia đình</Label>
-                  <select
-                    id="family_heart_disease"
-                    className="w-full p-2 border rounded"
-                    value={formData.family_heart_disease ?? "No"}
-                    onChange={(e) => handleInputChange(e, "family_heart_disease")}
-                  >
-                    <option value="No">Không</option>
-                    <option value="Yes">Có</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="diabetes">Tiểu đường</Label>
-                  <select
-                    id="diabetes"
-                    className="w-full p-2 border rounded"
-                    value={formData.diabetes ?? "No"}
-                    onChange={(e) => handleInputChange(e, "diabetes")}
-                  >
-                    <option value="No">Không</option>
-                    <option value="Yes">Có</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sleep_hours">Số giờ ngủ</Label>
-                  <Input
-                    id="sleep_hours"
-                    type="number"
-                    value={formData.sleep_hours ?? ""}
-                    onChange={(e) => handleInputChange(e, "sleep_hours")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="stress_level">Mức độ stress</Label>
-                  <select
-                    id="stress_level"
-                    className="w-full p-2 border rounded"
-                    value={formData.stress_level ?? "No"}
-                    onChange={(e) => handleInputChange(e, "stress_level")}
-                  >
-                    <option value="No">Thấp</option>
-                    <option value="Yes">Cao</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sugar_consumption">Tiêu thụ đường</Label>
-                  <select
-                    id="sugar_consumption"
-                    className="w-full p-2 border rounded"
-                    value={formData.sugar_consumption ?? "Low"}
-                    onChange={(e) => handleInputChange(e, "sugar_consumption")}
-                  >
-                    <option value="Low">Ít</option>
-                    <option value="Medium">Trung bình</option>
-                    <option value="High">Nhiều</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="alcohol_consumption">Tiêu thụ rượu bia</Label>
-                  <select
-                    id="alcohol_consumption"
-                    className="w-full p-2 border rounded"
-                    value={formData.alcohol_consumption ?? "Low"}
-                    onChange={(e) => handleInputChange(e, "alcohol_consumption")}
-                  >
-                    <option value="Low">Ít</option>
-                    <option value="Medium">Trung bình</option>
-                    <option value="High">Nhiều</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="triglyceride_level">Triglycerides</Label>
-                  <Input
-                    id="triglyceride_level"
-                    type="number"
-                    value={formData.triglyceride_level ?? ""}
-                    onChange={(e) => handleInputChange(e, "triglyceride_level")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="fasting_blood_sugar">Đường huyết lúc đói</Label>
-                  <Input
-                    id="fasting_blood_sugar"
-                    type="number"
-                    value={formData.fasting_blood_sugar ?? ""}
-                    onChange={(e) => handleInputChange(e, "fasting_blood_sugar")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="crp_level">CRP</Label>
-                  <Input
-                    id="crp_level"
-                    type="number"
-                    step="0.1"
-                    value={formData.crp_level ?? ""}
-                    onChange={(e) => handleInputChange(e, "crp_level")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="homocysteine_level">Homocysteine</Label>
-                  <Input
-                    id="homocysteine_level"
-                    type="number"
-                    step="0.1"
-                    value={formData.homocysteine_level ?? ""}
-                    onChange={(e) => handleInputChange(e, "homocysteine_level")}
-                  />
-                </div>
+                {/* Basic Information */}
+                {renderFormField("Tuổi", "age", "number")}
+                {renderFormField("Giới tính", "gender", "select", [
+                  { value: "Male", label: "Nam" },
+                  { value: "Female", label: "Nữ" }
+                ])}
+                {renderFormField("Huyết áp", "blood_pressure", "number")}
+                {renderFormField("Cholesterol", "cholesterol_level", "number")}
+                {renderFormField("Chỉ số BMI", "bmi", "number")}
+
+                {/* Lifestyle */}
+                {renderFormField("Tập thể dục", "exercise_habits", "select", [
+                  { value: "Low", label: "Ít" },
+                  { value: "Medium", label: "Trung bình" },
+                  { value: "High", label: "Nhiều" }
+                ])}
+                {renderFormField("Hút thuốc", "smoking", "select", [
+                  { value: "No", label: "Không" },
+                  { value: "Yes", label: "Có" }
+                ])}
+                {renderFormField("Tiền sử tim mạch gia đình", "family_heart_disease", "select", [
+                  { value: "No", label: "Không" },
+                  { value: "Yes", label: "Có" }
+                ])}
+                {renderFormField("Tiểu đường", "diabetes", "select", [
+                  { value: "No", label: "Không" },
+                  { value: "Yes", label: "Có" }
+                ])}
+                {renderFormField("Số giờ ngủ", "sleep_hours", "number")}
+                {renderFormField("Mức độ stress", "stress_level", "select", [
+                  { value: "No", label: "Thấp" },
+                  { value: "Yes", label: "Cao" }
+                ])}
+
+                {/* Consumption */}
+                {renderFormField("Tiêu thụ đường", "sugar_consumption", "select", [
+                  { value: "Low", label: "Ít" },
+                  { value: "Medium", label: "Trung bình" },
+                  { value: "High", label: "Nhiều" }
+                ])}
+                {renderFormField("Tiêu thụ rượu bia", "alcohol_consumption", "select", [
+                  { value: "Low", label: "Ít" },
+                  { value: "Medium", label: "Trung bình" },
+                  { value: "High", label: "Nhiều" }
+                ])}
+
+                {/* Medical Metrics */}
+                {renderFormField("Triglycerides", "triglyceride_level", "number")}
+                {renderFormField("Đường huyết lúc đói", "fasting_blood_sugar", "number")}
+                {renderFormField("CRP", "crp_level", "number")}
+                {renderFormField("Homocysteine", "homocysteine_level", "number")}
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#00BFFF] hover:bg-[#00BFFF]/80 text-white transition-colors"
+                disabled={loading}
+              >
                 {loading ? "Đang phân tích..." : "Phân Tích Nguy Cơ"}
               </Button>
             </form>
@@ -467,9 +380,9 @@ export default function CardiovascularPrediction() {
         </Card>
 
         {error && typeof error === 'string' && (
-          <Card>
+          <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
             <CardHeader>
-              <CardTitle>Lỗi</CardTitle>
+              <CardTitle className="text-[#00BFFF]">Lỗi</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-red-500">{error}</p>
@@ -479,10 +392,10 @@ export default function CardiovascularPrediction() {
 
         {result && result.explanation && (
           <div className="space-y-6">
-            <Card>
+            <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
               <CardHeader>
-                <CardTitle>{result.explanation.prediction.title}</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-[#00BFFF]">{result.explanation.prediction.title}</CardTitle>
+                <CardDescription className="text-gray-300">
                   Mức độ nguy cơ:{" "}
                   <span className={result.explanation.prediction.risk === "high" ? "text-red-500" : "text-green-500"}>
                     {result.explanation.prediction.risk === "high" ? "Nguy Cơ Cao" : "Nguy Cơ Thấp"}
@@ -492,19 +405,19 @@ export default function CardiovascularPrediction() {
               <CardContent>
                 {result.trustScore && (
                   <div className="mb-4">
-                    <h3 className="font-semibold mb-2">Độ Tin Cậy</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-4">
+                    <h3 className={`font-semibold mb-2 ${result.trustScore > 50 ? 'text-green-300' : 'text-red-300'}`}>Độ Tin Cậy</h3>
+                    <div className="w-full bg-gray-700/50 rounded-full h-4">
                       <div
-                        className="h-4 rounded-full bg-blue-500"
+                        className="h-4 rounded-full bg-[#00BFFF]"
                         style={{ width: `${result.trustScore}%` }}
                       />
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-300 mt-1">
                       {result.trustScore.toFixed(1)}% độ tin cậy
                     </p>
                   </div>
                 )}
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-300">
                   {result.explanation.prediction.interpretation}
                 </p>
               </CardContent>
@@ -514,16 +427,16 @@ export default function CardiovascularPrediction() {
             {result.explanation.biomarkers && renderMetricCard(result.explanation.biomarkers)}
             
             {result.explanation.analysis && (
-              <Card>
+              <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
                 <CardHeader>
-                  <CardTitle>{result.explanation.analysis.title}</CardTitle>
+                  <CardTitle className="text-[#00BFFF]">{result.explanation.analysis.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {result.explanation.analysis.mainFactors.map((factor, index) => (
-                      <div key={index} className="border-b pb-2 last:border-0">
-                        <h4 className="font-medium">{factor.factor}</h4>
-                        <p className="text-sm text-gray-600">{factor.explanation}</p>
+                      <div key={index} className="border-b border-gray-600/50 pb-2 last:border-0">
+                        <h4 className="font-medium text-gray-200">{factor.factor}</h4>
+                        <p className="text-sm text-gray-300">{factor.explanation}</p>
                         <span className={`text-sm ${
                           factor.impact === 'high' ? 'text-red-500' :
                           factor.impact === 'medium' ? 'text-yellow-500' :
@@ -543,9 +456,9 @@ export default function CardiovascularPrediction() {
             )}
 
             {result.explanation.analysis && result.explanation.analysis.riskFactors && (
-              <Card>
+              <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
                 <CardHeader>
-                  <CardTitle>Yếu tố nguy cơ</CardTitle>
+                  <CardTitle className="text-[#00BFFF]">Yếu tố nguy cơ</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {renderRiskFactors(result.explanation.analysis.riskFactors)}
@@ -556,7 +469,8 @@ export default function CardiovascularPrediction() {
             {result.explanation.recommendations && renderRecommendations(result.explanation.recommendations)}
           </div>
         )}
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

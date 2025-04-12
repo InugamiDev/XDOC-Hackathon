@@ -6,8 +6,8 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Health Risk Assessment",
-  description: "Evaluate your health risks using AI-powered analysis",
+  title: "XDOC: Chẩn đoán bệnh tim mạch và tiểu đường",
+  description: "Bài dự thi GDGoC Hackathon",
 };
 
 export default function RootLayout({
@@ -17,31 +17,36 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <header className="border-b">
+      <body className={`${inter.className} bg-gray-900`}>
+        <header className="border-b border-gray-700/50 backdrop-blur-sm bg-gray-600/50">
           <nav className="container mx-auto p-4">
             <div className="flex items-center justify-between">
-              <Link href="/" className="text-xl font-bold">
-                XDOC
-              </Link>
-              <div className="space-x-6">
+                <div className="flex items-center space-x-4">
+                <img src="/logo.png" alt="XDOC Logo" className="h-8 rounded-lg w-auto" />
+                <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#00BFFF] to-blue-500">
+                  XDOC
+                </Link>
+                </div>
+              <div className="space-x-8">
                 <Link
                   href="/diagnosis/diabetes"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-300 hover:text-[#00BFFF] transition-colors"
                 >
-                  Đánh Giá Nguy Cơ Tiểu Đường
+                  Tiểu Đường
                 </Link>
                 <Link
                   href="/diagnosis/cardiovascular"
-                  className="text-gray-600 hover:text-gray-900"
+                  className="text-gray-300 hover:text-[#00BFFF] transition-colors"
                 >
-                  Đánh Giá Nguy Cơ Tim Mạch
+                  Tim Mạch
                 </Link>
               </div>
             </div>
           </nav>
         </header>
-        <main>{children}</main>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+          {children}
+        </div>
       </body>
     </html>
   );

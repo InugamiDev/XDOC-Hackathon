@@ -10,16 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 transition-colors",
+          "bg-[#00BFFF] text-white shadow-[0_0_10px_rgba(0,191,255,0.3)] hover:bg-[#00BFFF]/80 hover:shadow-[0_0_15px_rgba(0,191,255,0.5)] transition-all",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 transition-colors",
+          "bg-red-500 text-white shadow-xs hover:bg-red-600 focus-visible:ring-red-500/20",
         outline:
-          "border border-input bg-background shadow-xs hover:bg-primary/10 hover:text-primary hover:border-primary/50 dark:bg-input/30 dark:border-input dark:hover:bg-primary/20 transition-colors",
+          "border border-gray-700/50 bg-gray-800/50 text-gray-200 hover:border-[#00BFFF]/50 hover:text-[#00BFFF] hover:bg-gray-700/50 transition-all",
         secondary:
-          "bg-secondary/30 text-primary shadow-xs hover:bg-secondary/50 transition-colors",
+          "bg-gray-700/50 text-[#00BFFF] hover:bg-gray-600/50 hover:text-[#00BFFF] transition-all",
         ghost:
-          "hover:bg-primary/10 hover:text-primary dark:hover:bg-primary/20 transition-colors",
-        link: "text-primary underline-offset-4 hover:underline hover:text-primary/80 transition-colors",
+          "text-gray-200 hover:bg-[#00BFFF]/10 hover:text-[#00BFFF] transition-all",
+        link: "text-[#00BFFF] underline-offset-4 hover:underline hover:text-[#00BFFF]/80 transition-colors",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

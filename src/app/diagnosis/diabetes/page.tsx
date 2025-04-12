@@ -130,25 +130,25 @@ export default function DiabetesPrediction() {
   };
 
   const renderMetricCard = (section: ExplanationSection) => (
-    <Card className="mb-4">
+    <Card className="mb-4 bg-gray-800/50 backdrop-blur border border-gray-700/50">
       <CardHeader>
-        <CardTitle>{section.title}</CardTitle>
+        <CardTitle className="text-[#00BFFF]">{section.title}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-gray-200">
         <div className="space-y-2">
           {section.items.map((item, index) => (
             <div key={index} className="flex justify-between items-center">
               <span className="font-medium">{item.label}:</span>
               <div className="text-right">
                 <span className={`${
-                  item.status === 'high' ? 'text-red-500' : 
-                  item.status === 'low' ? 'text-yellow-500' : 
-                  'text-green-500'
+                  item.status === 'high' ? 'text-red-400 font-medium' :
+                  item.status === 'low' ? 'text-yellow-400 font-medium' :
+                  'text-emerald-400 font-medium'
                 }`}>
                   {item.value}
                 </span>
                 {item.normalRange && (
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-gray-400">
                     Khoảng bình thường: {item.normalRange}
                   </div>
                 )}
@@ -161,16 +161,18 @@ export default function DiabetesPrediction() {
   );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Đánh Giá Nguy Cơ Tiểu Đường</h1>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Thông Tin Bệnh Nhân</CardTitle>
-            <CardDescription>Nhập các chỉ số sức khỏe của bạn</CardDescription>
-          </CardHeader>
-          <CardContent>
+    <main className="min-h-screen bg-gradient-to-br from-gray-700 via-gray-600 to-gray-900 p-8">
+      <div className="container mx-auto">
+        <h1 className="text-4xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-[#00BFFF] to-blue-500">
+          Đánh Giá Nguy Cơ Tiểu Đường
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
+            <CardHeader>
+              <CardTitle className="text-[#00BFFF]">Thông Tin Bệnh Nhân</CardTitle>
+              <CardDescription className="text-gray-300">Nhập các chỉ số sức khỏe của bạn</CardDescription>
+            </CardHeader>
+            <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -267,7 +269,11 @@ export default function DiabetesPrediction() {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[#00BFFF] hover:bg-[#00BFFF]/80 text-white transition-colors"
+                disabled={loading}
+              >
                 {loading ? "Đang phân tích..." : "Phân Tích Nguy Cơ"}
               </Button>
             </form>
@@ -275,9 +281,9 @@ export default function DiabetesPrediction() {
         </Card>
 
         {error && typeof error === 'string' && (
-          <Card>
+          <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
             <CardHeader>
-              <CardTitle>Lỗi</CardTitle>
+              <CardTitle className="text-[#00BFFF]">Lỗi</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-red-500">{error}</p>
@@ -287,10 +293,10 @@ export default function DiabetesPrediction() {
 
         {result && result.explanation && (
           <div className="space-y-6">
-            <Card>
+            <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
               <CardHeader>
-                <CardTitle>{result.explanation.prediction.title}</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-[#00BFFF]">{result.explanation.prediction.title}</CardTitle>
+                <CardDescription className="text-gray-300">
                   Mức độ nguy cơ:{" "}
                   <span className={result.explanation.prediction.risk === "high" ? "text-red-500" : "text-green-500"}>
                     {result.explanation.prediction.risk === "high" ? "Nguy Cơ Cao" : "Nguy Cơ Thấp"}
@@ -300,19 +306,19 @@ export default function DiabetesPrediction() {
               <CardContent>
                 {result.trustScore && (
                   <div className="mb-4">
-                    <h3 className="font-semibold mb-2">Độ Tin Cậy</h3>
-                    <div className="w-full bg-gray-200 rounded-full h-4">
+                    <h3 className={`font-semibold mb-2 ${result.trustScore > 50 ? 'text-green-300' : 'text-red-300'}`}>Độ Tin Cậy</h3>
+                    <div className="w-full bg-gray-700/50 rounded-full h-4">
                       <div
-                        className="h-4 rounded-full bg-blue-500"
+                        className="h-4 rounded-full bg-[#00BFFF]"
                         style={{ width: `${result.trustScore}%` }}
                       />
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-300 mt-1">
                       {result.trustScore.toFixed(1)}% độ tin cậy
                     </p>
                   </div>
                 )}
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-gray-300">
                   {result.explanation.prediction.interpretation}
                 </p>
               </CardContent>
@@ -323,19 +329,19 @@ export default function DiabetesPrediction() {
             {result.explanation.kidneyFunction && renderMetricCard(result.explanation.kidneyFunction)}
 
             {result.explanation.analysis && (
-              <Card>
+              <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
                 <CardHeader>
-                  <CardTitle>{result.explanation.analysis.title}</CardTitle>
+                  <CardTitle className="text-[#00BFFF]">{result.explanation.analysis.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-gray-200">
                   <div className="space-y-4">
                     {result.explanation.analysis.mainFactors.map((factor, index) => (
-                      <div key={index} className="border-b pb-2 last:border-0">
-                        <h4 className="font-medium">{factor.factor}</h4>
-                        <p className="text-sm text-gray-600">{factor.explanation}</p>
-                        <span className={`text-sm ${
-                          factor.impact === 'high' ? 'text-red-500' :
-                          factor.impact === 'medium' ? 'text-yellow-500' :
+                      <div key={index} className="border-b border-gray-700/50 pb-2 last:border-0">
+                        <h4 className="font-medium text-gray-200">{factor.factor}</h4>
+                        <p className="text-sm text-gray-300">{factor.explanation}</p>
+                        <span className={`text-sm font-medium ${
+                          factor.impact === 'high' ? 'text-red-400' :
+                          factor.impact === 'medium' ? 'text-yellow-400' :
                           'text-blue-500'
                         }`}>
                           Mức độ ảnh hưởng: {
@@ -352,18 +358,18 @@ export default function DiabetesPrediction() {
             )}
 
             {result.explanation.recommendations && (
-              <Card>
+              <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
                 <CardHeader>
-                  <CardTitle>{result.explanation.recommendations.title}</CardTitle>
+                  <CardTitle className="text-[#00BFFF]">{result.explanation.recommendations.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="text-gray-200">
                   <div className="space-y-4">
                     {result.explanation.recommendations.items.map((item, index) => (
                       <div key={index}>
-                        <h4 className="font-medium mb-2">{item.category}</h4>
-                        <ul className="list-disc list-inside space-y-1">
+                        <h4 className="font-medium mb-2 text-[#00BFFF]">{item.category}</h4>
+                        <ul className="list-disc list-inside space-y-1 text-gray-300">
                           {item.suggestions.map((suggestion, sIndex) => (
-                            <li key={sIndex} className="text-sm text-gray-600">{suggestion}</li>
+                            <li key={sIndex} className="text-sm text-gray-300">{suggestion}</li>
                           ))}
                         </ul>
                       </div>
@@ -374,7 +380,8 @@ export default function DiabetesPrediction() {
             )}
           </div>
         )}
-      </div>
-    </div>
-  );
+       </div>
+     </div>
+   </main>
+ );
 }

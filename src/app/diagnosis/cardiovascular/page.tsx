@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useState } from "react";
 
 interface FormData {
@@ -143,10 +142,6 @@ export default function CardiovascularPrediction() {
     </div>
   );
 
-  // Helper function for consistent label styling
-  const renderLabel = (text: string, htmlFor: string) => (
-    <Label htmlFor={htmlFor} className="text-gray-200">{text}</Label>
-  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

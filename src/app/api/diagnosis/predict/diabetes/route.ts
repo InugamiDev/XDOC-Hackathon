@@ -29,7 +29,7 @@ interface ShapValues {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { BMI, AGE, Urea, Cr, HbA1c, Chol, TG, HDL, LDL, VLDL } = body;
+    const { BMI, HbA1c, Chol, TG, VLDL } = body;
 
     // Validate that at least some key fields are provided
     if (!HbA1c && !Chol && !TG) {

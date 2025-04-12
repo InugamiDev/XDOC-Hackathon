@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     // Process the body to handle null values
     const processedBody = Object.fromEntries(
       Object.entries(body)
-        .filter(([_, value]) => value !== null)
+        .filter(([, value]) => value !== null)
         .map(([key, value]) => {
           // Convert numeric fields to numbers
           if (['age', 'blood_pressure', 'cholesterol_level', 'bmi', 'sleep_hours',

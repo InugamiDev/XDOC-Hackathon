@@ -113,10 +113,14 @@ export default function CardiovascularPrediction() {
     label: string,
     id: keyof FormData,
     type: "number" | "select",
-    options?: { value: string; label: string }[]
+    options?: { value: string; label: string }[],
+    tooltip?: string
   ) => (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id} className="flex items-center gap-1">
+        {label}
+        {tooltip && <span className="text-xs text-gray-400" title={tooltip}>[?]</span>}
+      </Label>
       {type === "select" && options ? (
         <select
           id={id}
@@ -306,62 +310,64 @@ export default function CardiovascularPrediction() {
         <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
           <CardHeader>
             <CardTitle className="text-[#00BFFF]">Thông Tin Bệnh Nhân</CardTitle>
-            <CardDescription className="text-gray-300">Nhập các chỉ số sức khỏe của bạn</CardDescription>
+            <CardDescription className="text-gray-300">
+              Vui lòng điền đầy đủ thông tin sức khỏe của bạn. Các chỉ số càng chính xác, kết quả dự đoán càng đáng tin cậy. Đối với các chỉ số xét nghiệm, hãy sử dụng kết quả gần nhất của bạn.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Basic Information */}
-                {renderFormField("Tuổi", "age", "number")}
+                {renderFormField("Tuổi", "age", "number", undefined, "Độ tuổi của bạn (từ 18-100 tuổi)")}
                 {renderFormField("Giới tính", "gender", "select", [
                   { value: "Male", label: "Nam" },
                   { value: "Female", label: "Nữ" }
                 ])}
-                {renderFormField("Huyết áp", "blood_pressure", "number")}
-                {renderFormField("Cholesterol", "cholesterol_level", "number")}
-                {renderFormField("Chỉ số BMI", "bmi", "number")}
+                {renderFormField("Huyết áp", "blood_pressure", "number", undefined, "Huyết áp tâm thu (mmHg). Mức bình thường: 90-120 mmHg")}
+                {renderFormField("Cholesterol", "cholesterol_level", "number", undefined, "Cholesterol tổng trong máu (mg/dL). Mức bình thường: dưới 200 mg/dL")}
+                {renderFormField("Chỉ số BMI", "bmi", "number", undefined, "Chỉ số khối cơ thể (kg/m²). Mức bình thường: 18.5-24.9")}
 
                 {/* Lifestyle */}
                 {renderFormField("Tập thể dục", "exercise_habits", "select", [
                   { value: "Low", label: "Ít" },
                   { value: "Medium", label: "Trung bình" },
                   { value: "High", label: "Nhiều" }
-                ])}
+                ], "Mức độ vận động thể chất: Ít (dưới 1h/tuần), Trung bình (1-3h/tuần), Nhiều (trên 3h/tuần)")}
                 {renderFormField("Hút thuốc", "smoking", "select", [
                   { value: "No", label: "Không" },
                   { value: "Yes", label: "Có" }
-                ])}
+                ], "Thói quen hút thuốc lá hiện tại hoặc trong 5 năm gần đây")}
                 {renderFormField("Tiền sử tim mạch gia đình", "family_heart_disease", "select", [
                   { value: "No", label: "Không" },
                   { value: "Yes", label: "Có" }
-                ])}
+                ], "Gia đình có người thân (cha, mẹ, anh chị em ruột) mắc bệnh tim mạch trước 55 tuổi")}
                 {renderFormField("Tiểu đường", "diabetes", "select", [
                   { value: "No", label: "Không" },
                   { value: "Yes", label: "Có" }
-                ])}
-                {renderFormField("Số giờ ngủ", "sleep_hours", "number")}
+                ], "Bạn đã được chẩn đoán mắc bệnh tiểu đường type 1 hoặc type 2")}
+                {renderFormField("Số giờ ngủ", "sleep_hours", "number", undefined, "Số giờ ngủ trung bình mỗi ngày. Mức khuyến nghị: 7-9 giờ/ngày")}
                 {renderFormField("Mức độ stress", "stress_level", "select", [
                   { value: "No", label: "Thấp" },
                   { value: "Yes", label: "Cao" }
-                ])}
+                ], "Đánh giá mức độ căng thẳng trong cuộc sống hàng ngày của bạn")}
 
                 {/* Consumption */}
                 {renderFormField("Tiêu thụ đường", "sugar_consumption", "select", [
                   { value: "Low", label: "Ít" },
                   { value: "Medium", label: "Trung bình" },
                   { value: "High", label: "Nhiều" }
-                ])}
+                ], "Mức độ tiêu thụ đường: Ít (< 25g/ngày), Trung bình (25-50g/ngày), Nhiều (> 50g/ngày)")}
                 {renderFormField("Tiêu thụ rượu bia", "alcohol_consumption", "select", [
                   { value: "Low", label: "Ít" },
                   { value: "Medium", label: "Trung bình" },
                   { value: "High", label: "Nhiều" }
-                ])}
+                ], "Mức độ tiêu thụ rượu bia: Ít (< 1 ly/ngày), Trung bình (1-2 ly/ngày), Nhiều (> 2 ly/ngày)")}
 
                 {/* Medical Metrics */}
-                {renderFormField("Triglycerides", "triglyceride_level", "number")}
-                {renderFormField("Đường huyết lúc đói", "fasting_blood_sugar", "number")}
-                {renderFormField("CRP", "crp_level", "number")}
-                {renderFormField("Homocysteine", "homocysteine_level", "number")}
+                {renderFormField("Triglycerides", "triglyceride_level", "number", undefined, "Lượng mỡ trong máu (mg/dL). Mức bình thường: dưới 150 mg/dL")}
+                {renderFormField("Đường huyết lúc đói", "fasting_blood_sugar", "number", undefined, "Nồng độ đường trong máu khi đói (mg/dL). Mức bình thường: 70-100 mg/dL")}
+                {renderFormField("CRP", "crp_level", "number", undefined, "Protein phản ứng C (mg/L). Mức bình thường: dưới 3 mg/L")}
+                {renderFormField("Homocysteine", "homocysteine_level", "number", undefined, "Amino acid trong máu (µmol/L). Mức bình thường: 5-15 µmol/L")}
               </div>
               <Button
                 type="submit"

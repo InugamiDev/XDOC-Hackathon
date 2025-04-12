@@ -169,102 +169,144 @@ export default function DiabetesPrediction() {
           <Card className="bg-gray-800/50 backdrop-blur border border-gray-700/50">
             <CardHeader>
               <CardTitle className="text-[#00BFFF]">Thông Tin Bệnh Nhân</CardTitle>
-              <CardDescription className="text-gray-300">Nhập các chỉ số sức khỏe của bạn</CardDescription>
+              <CardDescription className="text-gray-300">
+                Vui lòng nhập các chỉ số từ xét nghiệm máu gần nhất của bạn. Để có kết quả chính xác nhất, hãy đảm bảo nhập đúng các giá trị từ phiếu xét nghiệm.
+              </CardDescription>
             </CardHeader>
             <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="age">Tuổi</Label>
+                  <Label htmlFor="age" className="flex items-center gap-1">
+                    Tuổi
+                    <span className="text-xs text-gray-400" title="Độ tuổi của bạn (từ 18-100 tuổi)">[?]</span>
+                  </Label>
                   <Input
                     id="age"
                     type="number"
                     value={formData.AGE ?? ""}
                     onChange={(e) => handleInputChange(e, "AGE")}
+                    placeholder="VD: 45"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bmi">Chỉ số BMI</Label>
+                  <Label htmlFor="bmi" className="flex items-center gap-1">
+                    Chỉ số BMI
+                    <span className="text-xs text-gray-400" title="Chỉ số khối cơ thể (kg/m²). Mức bình thường: 18.5-24.9">[?]</span>
+                  </Label>
                   <Input
                     id="bmi"
                     type="number"
                     step="0.1"
                     value={formData.BMI ?? ""}
                     onChange={(e) => handleInputChange(e, "BMI")}
+                    placeholder="VD: 23.5"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hba1c">HbA1c (%)</Label>
+                  <Label htmlFor="hba1c" className="flex items-center gap-1">
+                    HbA1c (%)
+                    <span className="text-xs text-gray-400" title="Chỉ số đường huyết trung bình trong 2-3 tháng qua. Bình thường: 4-5.6%">[?]</span>
+                  </Label>
                   <Input
                     id="hba1c"
                     type="number"
                     step="0.1"
                     value={formData.HbA1c ?? ""}
                     onChange={(e) => handleInputChange(e, "HbA1c")}
+                    placeholder="VD: 5.2"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="chol">Cholesterol</Label>
+                  <Label htmlFor="chol" className="flex items-center gap-1">
+                    Cholesterol
+                    <span className="text-xs text-gray-400" title="Cholesterol tổng trong máu (mg/dL). Mức bình thường: dưới 200 mg/dL">[?]</span>
+                  </Label>
                   <Input
                     id="chol"
                     type="number"
                     value={formData.Chol ?? ""}
                     onChange={(e) => handleInputChange(e, "Chol")}
+                    placeholder="VD: 180"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="tg">Triglycerides</Label>
+                  <Label htmlFor="tg" className="flex items-center gap-1">
+                    Triglycerides
+                    <span className="text-xs text-gray-400" title="Lượng mỡ trong máu (mg/dL). Mức bình thường: dưới 150 mg/dL">[?]</span>
+                  </Label>
                   <Input
                     id="tg"
                     type="number"
                     value={formData.TG ?? ""}
                     onChange={(e) => handleInputChange(e, "TG")}
+                    placeholder="VD: 140"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hdl">HDL</Label>
+                  <Label htmlFor="hdl" className="flex items-center gap-1">
+                    HDL
+                    <span className="text-xs text-gray-400" title="Cholesterol có lợi (mg/dL). Mức bình thường: trên 40 mg/dL (nam), trên 50 mg/dL (nữ)">[?]</span>
+                  </Label>
                   <Input
                     id="hdl"
                     type="number"
                     value={formData.HDL ?? ""}
                     onChange={(e) => handleInputChange(e, "HDL")}
+                    placeholder="VD: 45"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="ldl">LDL</Label>
+                  <Label htmlFor="ldl" className="flex items-center gap-1">
+                    LDL
+                    <span className="text-xs text-gray-400" title="Cholesterol có hại (mg/dL). Mức bình thường: dưới 100 mg/dL">[?]</span>
+                  </Label>
                   <Input
                     id="ldl"
                     type="number"
                     value={formData.LDL ?? ""}
                     onChange={(e) => handleInputChange(e, "LDL")}
+                    placeholder="VD: 90"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="vldl">VLDL</Label>
+                  <Label htmlFor="vldl" className="flex items-center gap-1">
+                    VLDL
+                    <span className="text-xs text-gray-400" title="Lipoprotein mật độ rất thấp (mg/dL). Mức bình thường: 2-30 mg/dL">[?]</span>
+                  </Label>
                   <Input
                     id="vldl"
                     type="number"
                     value={formData.VLDL ?? ""}
                     onChange={(e) => handleInputChange(e, "VLDL")}
+                    placeholder="VD: 25"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="urea">Ure</Label>
+                  <Label htmlFor="urea" className="flex items-center gap-1">
+                    Ure
+                    <span className="text-xs text-gray-400" title="Nồng độ ure trong máu (mg/dL). Mức bình thường: 15-40 mg/dL">[?]</span>
+                  </Label>
                   <Input
                     id="urea"
                     type="number"
                     value={formData.Urea ?? ""}
                     onChange={(e) => handleInputChange(e, "Urea")}
+                    placeholder="VD: 30"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cr">Creatinine</Label>
+                  <Label htmlFor="cr" className="flex items-center gap-1">
+                    Creatinine
+                    <span className="text-xs text-gray-400" title="Chỉ số đánh giá chức năng thận (mg/dL). Mức bình thường: 0.7-1.2 mg/dL (nam), 0.5-1.0 mg/dL (nữ)">[?]</span>
+                  </Label>
                   <Input
                     id="cr"
                     type="number"
                     step="0.1"
                     value={formData.Cr ?? ""}
                     onChange={(e) => handleInputChange(e, "Cr")}
+                    placeholder="VD: 0.9"
                   />
                 </div>
               </div>
